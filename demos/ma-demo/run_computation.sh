@@ -13,6 +13,10 @@ for i in $(seq 1 3); do
     trap "kill $ids" EXIT
 done
 
-node demos/ma-demo/cli-client.js
-node demos/ma-demo/cli-client.js
-node demos/ma-demo/cli-client.js
+for i in $(seq 1 10); do
+    node demos/ma-demo/cli-client.js $i 3 &
+    ids="$ids $!"
+    trap "kill $ids" EXIT
+done
+
+sleep 20

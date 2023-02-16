@@ -4,6 +4,10 @@
     JIFFClient = require('../../lib/jiff-client.js');
     // eslint-disable-next-line no-undef
     jiff_restAPI = require('../../lib/ext/jiff-client-restful.js');
+
+    var jiff_bignumber = require('../../lib/ext/jiff-client-bignumber');
+    var jiff_fixedpoint = require('../../lib/ext/jiff-client-fixedpoint')
+    var jiff_negativenumber = require('../../lib/ext/jiff-client-negativenumber');
   }
 
   var __jiff_instance, config;
@@ -20,6 +24,9 @@
     __jiff_instance = new JIFFClient(hostname, computation_id, opt);
     // eslint-disable-next-line no-undef
     __jiff_instance.apply_extension(jiff_restAPI);
+    __jiff_instance.apply_extension(jiff_bignumber, opt);
+    __jiff_instance.apply_extension(jiff_fixedpoint, opt);
+    __jiff_instance.apply_extension(jiff_negativenumber, opt);
     __jiff_instance.connect();
     return __jiff_instance;
   };

@@ -30,11 +30,22 @@ if (process.argv[3] != null) {
 
 // Initialize JIFF
 var JIFFClient = require('../../lib/jiff-client.js');
-var jiffClient = new JIFFClient('http://localhost:8080', computation_id, {
+var jiff_bignumber = require('../../lib/ext/jiff-client-bignumber');
+var jiff_fixedpoint = require('../../lib/ext/jiff-client-fixedpoint')
+var jiff_negativenumber = require('../../lib/ext/jiff-client-negativenumber');
+
+var opt = {
   crypto_provider: config.preprocessing === false, // comment this out if you want to use preprocessing
   party_count: config.party_count,
-  initialization: {role: 'compute'} // indicate to the server that this is a compute party
-});
+  initialization: { role: 'compute' }, // indicate to the server that this is a compute party
+  zP: "486024591023",
+  //integer_digits: 5, decimal_digits: 2
+};
+
+var jiffClient = new JIFFClient('http://localhost:8080', computation_id, opt);
+jiffClient.apply_extension(jiff_bignumber, opt);
+jiffClient.apply_extension(jiff_fixedpoint, opt);
+jiffClient.apply_extension(jiff_negativenumber, opt);
 
 // the computation code
 var compute = function () {
@@ -50,15 +61,26 @@ var compute = function () {
       sum = sum.sadd(shares1[p]);
     }
 
+    var X1 = []
+    var X2 = []
+    for (var i = 0; i < shares2.length; i++) {
+      if (i % 2 == 0) {
+        X1 = X1 + [shares2[i]]
+      } else {
+        X2 = X2 + [shares2[i]]
+      }
+    }
+
+
     var prod = shares2[config.input_parties[0]];
     for (var i = 1; i < config.input_parties.length; i++) {
       prod = prod.smult(shares2[config.input_parties[i]]);
     }
 
     jiffClient.open(sum, config.compute_parties).then(function (output) {
-      console.log('Final sum output is: ', output);
+      console.log('Final sum output is: ', output.toString());
       jiffClient.open(prod, config.compute_parties).then(output => {
-        console.log('Final product output is: ', output);
+        console.log('Final product output is: ', output.toString());
         jiffClient.disconnect(true, true);
       })
     });
@@ -69,7 +91,7 @@ var compute = function () {
 jiffClient.wait_for(config.compute_parties, function () {
   if (config.preprocessing !== false) {
     // do not use crypto provider, perform preprocessing!
-    jiffClient.preprocessing('open', 2, null, null, config.compute_parties, config.compute_parties, null, null, {open_parties: all_parties});
+    jiffClient.preprocessing('open', 2, null, null, config.compute_parties, config.compute_parties, null, null, { open_parties: all_parties });
     jiffClient.preprocessing("smult", config.input_parties.length, null, null, config.compute_parties, config.compute_parties);
     jiffClient.executePreprocessing(compute.bind(null, jiffClient));
   } else {

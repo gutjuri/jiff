@@ -69,7 +69,9 @@ var options = {
 var JIFFServer = require('../../lib/jiff-server');
 var jiffRestAPIServer = require('../../lib/ext/jiff-server-restful.js');
 var jiffServer = new JIFFServer(http, options);
+var jiff_bignumber = require('../../lib/ext/jiff-server-bignumber');
 jiffServer.apply_extension(jiffRestAPIServer, {app: app});
+jiffServer.apply_extension(jiff_bignumber, {app: app});
 
 // Serve static files.
 app.get('/config.js', function (req, res) {
