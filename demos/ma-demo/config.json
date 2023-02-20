@@ -14,5 +14,9 @@
     "* preprocessing flags whether to rely on preprocessing (true) or the server as a crypto provider (false),",
     "* for more info on preprocessing, check out the preprocessing tutorial!",
     "*/"
-  ]
+  ],
+  "Zp": "260623316657987",
+  "integer_digits": 7,
+  "decimal_digits": 2,
+  "debug_output": false
 }

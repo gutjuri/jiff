@@ -6,26 +6,26 @@
  * Configuration file path is optional, by default ./config.js
  * will be used.
  */
-console.log('Command line arguments: [/path/to/configuration/file.json]');
+console.log("Command line arguments: [/path/to/configuration/file.json]");
 
 // Server setup
-var express = require('express');
+var express = require("express");
 var app = express();
-var http = require('http').Server(app);
-var path = require('path');
+var http = require("http").Server(app);
+var path = require("path");
 
 // body parser to handle json data
-var bodyParser  = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Read configuration
-var config = './config.json';
+var config = "./config.json";
 if (process.argv[2] != null) {
-  config = './' + process.argv[2];
+  config = "./" + process.argv[2];
 }
 
-console.log('Using config file: ', path.join(__dirname, config));
+console.log("Using config file: ", path.join(__dirname, config));
 config = require(config);
 
 // Keep track of assigned ids
@@ -36,14 +36,14 @@ var options = {
   hooks: {
     beforeInitialization: [
       function (jiff, computation_id, msg, params) {
-        console.log('got called with', msg.role);
+        console.log("got called with", msg.role);
         if (params.party_id != null) {
           return params;
         }
 
         var search = config.compute_parties;
         var check = assignedCompute;
-        if (msg.role === 'input') {
+        if (msg.role === "input") {
           search = config.input_parties;
           check = assignedInput;
         }
@@ -60,39 +60,48 @@ var options = {
         }
 
         return params;
-      }
-    ]
-  }
+      },
+    ],
+  },
 };
 
 // Create the server
-var JIFFServer = require('../../lib/jiff-server');
-var jiffRestAPIServer = require('../../lib/ext/jiff-server-restful.js');
+var JIFFServer = require("../../lib/jiff-server");
+var jiffRestAPIServer = require("../../lib/ext/jiff-server-restful.js");
 var jiffServer = new JIFFServer(http, options);
-var jiff_bignumber = require('../../lib/ext/jiff-server-bignumber');
-jiffServer.apply_extension(jiffRestAPIServer, {app: app});
-jiffServer.apply_extension(jiff_bignumber, {app: app});
+var jiff_bignumber = require("../../lib/ext/jiff-server-bignumber");
+jiffServer.apply_extension(jiffRestAPIServer, { app: app });
+jiffServer.apply_extension(jiff_bignumber, { app: app });
 
 // Serve static files.
-app.get('/config.js', function (req, res) {
-  var str = 'var config = \'' + JSON.stringify(config) + '\';\n';
-  str += 'config = JSON.parse(config);';
+app.get("/config.js", function (req, res) {
+  var str = "var config = '" + JSON.stringify(config) + "';\n";
+  str += "config = JSON.parse(config);";
   res.send(str);
 });
 
 app.get("/config.json", function (req, res) {
-  res.json(config)
-})
-
-app.use('/demos', express.static(path.join(__dirname, '..', '..', 'demos')));
-app.use('/dist', express.static(path.join(__dirname, '..', '..', 'dist')));
-app.use('/lib/ext', express.static(path.join(__dirname, '..', '..', 'lib', 'ext')));
-http.listen(8080, function () {
-  console.log('listening on *:8080');
+  res.json(config);
 });
 
-console.log('** To provide inputs, direct your browser to http://localhost:8080/demos/mpc-as-a-service/client.html.');
-console.log('** To run a compute party, use the command line and run node compute-party.js [configuration-file] [computation-id]');
-console.log('All compute parties must be running before input parties can connect, an input party can leave');
-console.log('any time after it submits its input.');
-console.log('');
+app.use("/demos", express.static(path.join(__dirname, "..", "..", "demos")));
+app.use("/dist", express.static(path.join(__dirname, "..", "..", "dist")));
+app.use(
+  "/lib/ext",
+  express.static(path.join(__dirname, "..", "..", "lib", "ext"))
+);
+http.listen(8080, function () {
+  console.log("listening on *:8080");
+});
+
+console.log(
+  "** To provide inputs, direct your browser to http://localhost:8080/demos/mpc-as-a-service/client.html."
+);
+console.log(
+  "** To run a compute party, use the command line and run node compute-party.js [configuration-file] [computation-id]"
+);
+console.log(
+  "All compute parties must be running before input parties can connect, an input party can leave"
+);
+console.log("any time after it submits its input.");
+console.log("");
