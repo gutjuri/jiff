@@ -56,6 +56,7 @@ var compute = function () {
     var shares2 = jiffClient.share(null, null, config.compute_parties, config.input_parties);
 
     var sum = shares1[config.input_parties[0]];
+    console.log(typeof(sum))
     for (var i = 1; i < config.input_parties.length; i++) {
       var p = config.input_parties[i];
       sum = sum.sadd(shares1[p]);

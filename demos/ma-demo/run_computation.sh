@@ -14,7 +14,7 @@ for i in $(seq 1 3); do
 done
 
 for i in $(seq 1 10); do
-    node demos/ma-demo/cli-client.js $i 3 &
+    node demos/ma-demo/cli-client.js $i 3.0 &
     ids="$ids $!"
     trap "kill $ids" EXIT
 done

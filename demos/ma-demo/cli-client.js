@@ -22,8 +22,8 @@ async function connect_and_submit() {
     var jiff = mpc.connect(hostname, computation_id, options, config);
     console.log(jiff.Zp.toString())
     jiff.wait_for(config.compute_parties, function () {
-        jiff.share(jiff.helpers.BigNumber(input1), null, config.compute_parties, config.input_parties);
-        jiff.share(jiff.helpers.BigNumber(input2), null, config.compute_parties, config.input_parties);
+        jiff.share(input1, null, config.compute_parties, config.input_parties);
+        jiff.share(input2, null, config.compute_parties, config.input_parties);
         jiff.disconnect(true, true)
     });
   }
